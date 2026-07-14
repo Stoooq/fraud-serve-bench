@@ -5,11 +5,12 @@ from pydantic import BaseModel
 
 
 class PathsConfig(BaseModel):
-    data_path: str
-    artifacts_dir: str
+    data_path: Path
+    artifacts_dir: Path
 
 
 class TrainingConfig(BaseModel):
+    recall: float
     test_size: float
     max_depth: int
     n_estimators: int

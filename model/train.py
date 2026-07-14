@@ -39,6 +39,7 @@ def train():
                 RandomForestClassifier(
                     max_depth=cfg.training.max_depth,
                     n_estimators=cfg.training.n_estimators,
+                    class_weight="balanced_subsample",
                     random_state=cfg.training.random_state,
                 ),
             ),
@@ -54,7 +55,10 @@ def train():
     precision, recall, thresholds = precision_recall_curve(y_test, y_proba[:, 1])
     print("Auc pr:", auc_pr)
 
-    mask = recall[:-1] >= 0.9
+    mask = recall[:-1] >= cfg.training.recall
+    if not mask.any():
+        raise ValueError("Threshold not found")
+
     valid_idx = np.flatnonzero(mask)
     best_pos = np.argmax(precision[:-1][mask])
     best_idx = valid_idx[best_pos]
@@ -75,7 +79,8 @@ def train():
         options={id(pipe): {"zipmap": False}},
     )
 
-    sess = ort.InferenceSession(onnx_model.SerializeToString())
+    onnx_str = onnx_model.SerializeToString()
+    sess = ort.InferenceSession(onnx_str)
     X_test32 = X_test.to_numpy(dtype=np.float32)
     onnx_proba = sess.run(None, {"float_input": X_test32})[1]
 
@@ -103,7 +108,7 @@ def train():
     )
 
     cfg.paths.artifacts_dir.mkdir(parents=True, exist_ok=True)
-    (cfg.paths.artifacts_dir / "model.onnx").write_bytes(onnx_model.SerializeToString())
+    (cfg.paths.artifacts_dir / "model.onnx").write_bytes(onnx_str)
     (cfg.paths.artifacts_dir / "metadata.json").write_text(
         json.dumps(metadata, indent=2)
     )
