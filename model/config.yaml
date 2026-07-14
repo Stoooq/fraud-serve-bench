@@ -1,0 +1,8 @@
+paths:
+  data_path: "data/creditcard.csv"
+  artifacts_dir: "../artifacts"
+
+training:
+  test_size: 0.3
+  max_depth: 10
+  n_estimators: 10
