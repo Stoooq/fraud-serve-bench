@@ -24,7 +24,11 @@ def train():
     X, y = df.drop(columns=["Class"]), df["Class"]
 
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=cfg.training.test_size, stratify=y, random_state=42
+        X,
+        y,
+        test_size=cfg.training.test_size,
+        stratify=y,
+        random_state=cfg.training.random_state,
     )
 
     pipe = Pipeline(
@@ -35,6 +39,7 @@ def train():
                 RandomForestClassifier(
                     max_depth=cfg.training.max_depth,
                     n_estimators=cfg.training.n_estimators,
+                    random_state=cfg.training.random_state,
                 ),
             ),
         ]
@@ -94,6 +99,7 @@ def train():
         recall=float(recall[best_idx]),
         feature_names=list(X_train.columns),
         n_features=len(X_train.columns),
+        random_state=cfg.training.random_state,
     )
 
     cfg.paths.artifacts_dir.mkdir(parents=True, exist_ok=True)

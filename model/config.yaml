@@ -6,3 +6,4 @@ training:
   test_size: 0.3
   max_depth: 10
   n_estimators: 10
+  random_state: 42

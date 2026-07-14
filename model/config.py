@@ -13,6 +13,7 @@ class TrainingConfig(BaseModel):
     test_size: float
     max_depth: int
     n_estimators: int
+    random_state: int
 
 
 class AppConfig(BaseModel):
