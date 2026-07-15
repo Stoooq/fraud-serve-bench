@@ -70,3 +70,13 @@ def predict_batch(body: BatchPredictRequest) -> BatchPredictResponse:
     return BatchPredictResponse(
         is_fraud=is_fraud.tolist(), proba=proba.tolist(), predict_time=predict_time
     )
+
+
+@app.get("/schema")
+def schema():
+    return {
+        "feature_names": feature_names,
+        "n_features": n_features,
+        "threshold": threshold,
+        "model_type": meta["model_type"],
+    }
